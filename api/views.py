@@ -1,6 +1,5 @@
 from typing import List
 from django.shortcuts import render
-from rest_framework import serializers
 from rest_framework.decorators import api_view
 from .models import Post, User
 from .serializers import PostSerializer
@@ -29,6 +28,8 @@ class PostApi(ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+# api for all posts
+
 
 @api_view(['GET'])
 def post_list(request):
@@ -36,6 +37,8 @@ def post_list(request):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+
+# api for specific post
 
 
 @api_view(['GET'])
@@ -49,6 +52,8 @@ def post_detail(request, id):
     if request.method == 'GET':
         serializer = PostSerializer(post)
         return Response(serializer.data)
+
+# api for specific user
 
 
 @api_view(['GET'])
@@ -66,12 +71,12 @@ def post_stats(request, id):
 
 
 @api_view(['GET'])
-def number_of_likes_per_user(request, id):
+def avg_number_of_likes(request, id):
     try:
         user = User.objects.get(id=id)
     except User.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        posts = user.posts.all().aggregate(Sum('likes'))
+        posts = user.posts.all().aggregate(Avg('likes'))
         return Response(posts)

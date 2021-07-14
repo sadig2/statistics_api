@@ -45,10 +45,12 @@ class TestPost(TestCase):
     def test_likes(self):
         countoflikes = 0
         posts = self.user.posts.all()
+        count_of_post = len(posts)
         for post in posts:
             countoflikes += post.likes
+        avg = countoflikes/count_of_post
 
         response = self.client.get(
-            reverse('number_of_likes_per_user', kwargs={'id': self.user.id}))
+            reverse('avg_number_of_likes', kwargs={'id': self.user.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['likes__sum'], countoflikes)
+        self.assertEqual(response.data['likes__avg'], avg)
